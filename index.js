@@ -1,5 +1,9 @@
 const express = require('express')
+const bodyParser = require('body-parser')
+
 const app = express()
+
+app.use(bodyParser.json())
 
 let persons = [
     {
@@ -24,6 +28,14 @@ let persons = [
     }
 ]
 
+const generatedId = () => {
+    const maxId = persons.length > 0
+        ? Math.max(...persons.map(p => p.id))
+        : 0
+
+    return maxId + 1
+}
+
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
 })
@@ -43,6 +55,26 @@ app.get('/info', (req, res) => {
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
+})
+
+app.post('/api/persons', (req, res) => {
+    const body = req.body
+
+    if (!body.name || !body.number) {
+        return res.status(400).json({
+            error: 'name or number missing'
+        })
+    }
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: generatedId(),
+    }
+    persons = persons.concat(person)
+    console.log(person)
+
+    res.json(person)
 })
 
 app.get('/api/persons/:id', (req, res) => {
