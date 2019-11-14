@@ -19,17 +19,21 @@ app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
 })
 
-app.get('/info', (req, res) => {
-
-    res.send(
-        `<p>
-    Puhelinluettelossa
-    ${persons.length} henkilön tiedot
-    </p>
-    <p>
-      ${new Date()}
-    </p>`
-    )
+app.get('/info', (request, response) => {
+    Person
+        .find()
+        .then((persons) => {
+            response
+                .send(
+                    `<p>
+        Puhelinluettelossa
+        ${persons.length} henkilön tiedot
+        </p>
+        <p>
+          ${new Date()}
+        </p>`,
+                )
+        })
 })
 
 app.get('/api/persons', (request, response) => {
@@ -44,30 +48,18 @@ app.get('/api/persons', (request, response) => {
 
 })
 
-app.post('/api/persons', (req, res) => {
-    const body = req.body
+app.post('/api/persons', (request, response) => {
+    const { name, number } = request.body
 
-    if (!body.name || !body.number) {
-        return res.status(400).json({
-            error: 'name or number missing'
+    const person = new Person({
+        name, number
+    })
+
+    person
+        .save()
+        .then(savedPerson => {
+            response.json(savedPerson.toJSON())
         })
-    }
-
-    if (persons.filter(p => p.name === body.name).length > 0) {
-        return res.status(400).json({
-            error: 'name must be unique'
-        })
-    }
-
-    const person = {
-        name: body.name,
-        number: body.number,
-        id: generatedId(),
-    }
-    persons = persons.concat(person)
-    console.log(person)
-
-    res.json(person)
 })
 
 app.get('/api/persons/:id', (req, res) => {
