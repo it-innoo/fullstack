@@ -1,9 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
 
 const app = express()
+const Person = require('./models/person')
 
 app.use(bodyParser.json())
 app.use(cors())
@@ -12,36 +14,6 @@ app.use(express.static('build'))
 morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-let persons = [
-    {
-        "name": "Arto Hellas",
-        "number": "040-123456",
-        "id": 1
-    },
-    {
-        "name": "Martti Tienari",
-        "number": "040-123456",
-        "id": 2
-    },
-    {
-        "name": "Arto Järvinen",
-        "number": "040-123456",
-        "id": 3
-    },
-    {
-        "name": "Lea Kutvonen",
-        "number": "040-123456",
-        "id": 4
-    }
-]
-
-const generatedId = () => {
-    const maxId = persons.length > 0
-        ? Math.max(...persons.map(p => p.id))
-        : 0
-
-    return maxId + 1
-}
 
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
@@ -60,8 +32,16 @@ app.get('/info', (req, res) => {
     )
 })
 
-app.get('/api/persons', (req, res) => {
-    res.json(persons)
+app.get('/api/persons', (request, response) => {
+    Person
+        .find({})
+        .then((persons) => {
+            response.json(
+                persons.map(
+                    person => person.toJSON()
+                ))
+        })
+
 })
 
 app.post('/api/persons', (req, res) => {
