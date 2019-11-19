@@ -11,6 +11,7 @@
     "logs:prod": "heroku logs --tail",
     "start": "node index.js",
     "watch": "nodemon index.js",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "jailgreen <jukka@jahlgren.eu>",
@@ -25,5 +26,7 @@
     "nodemon": "^1.19.4",
     "serve-favicon": "^2.5.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "eslint": "^6.6.0"
+  }
 }
