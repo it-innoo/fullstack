@@ -5,7 +5,8 @@ console.log('connecting to', url)
 
 mongoose.connect(url, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false,
 })
   .then(() => {
     console.log('connected to MongoDB')
